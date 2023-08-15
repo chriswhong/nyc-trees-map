@@ -1,0 +1,441 @@
+<html>
+
+<head>
+    <title>NYC Tree Models</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css"
+        type="text/css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0-beta.1/mapbox-gl.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
+
+        #about {
+            position: absolute;
+            left: 15px;
+            top: 0px;
+            max-width: 280px;
+            font-family: sans-serif;
+            background: #c0c9c4;
+            padding: 15px;
+        }
+
+        #about h1 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+    </style>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl-loaders.js"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="about">
+        <h1>NYC Trees</h1>
+        <p>An experimental map combining <a href="https://www.nature.com/articles/s41597-023-02000-w">a lidar-based dataset of trees in New York City</a> with the 3D tree models
+            available in <a href="https://github.com/mapbox/mapbox-gl-js/blob/main/MIGRATION_GUIDE_v3.md">Mapbox GL JS v3</a> and the <a href="https://www.mapbox.com/blog/standard-core-style">Mapbox Standard Style</a>.</p>
+            <p>Zoom, rotate, and pitch the map. Take a screenshot and share it if you find a particularly interesting scene!</p>
+            <p>by <a href="https://twitter.com/chris_whong">@chris_whong</a></p>
+    </div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0-beta.1/mapbox-gl.js"></script>
+    <script
+    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <script>
+
+        const drawnTreesGeojson = {
+            type: 'FeatureCollection',
+            features: []
+        }
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXN3aG9uZ21hcGJveCIsImEiOiJjbDl6bzJ6N3EwMGczM3BudjZmbm5yOXFnIn0.lPhc5Z5H3byF_gf_Jz48Ug';
+
+        const style = {
+            version: 8,
+            imports: [
+                {
+                    id: 'standard',
+                    url: 'mapbox://styles/mapbox/standard-beta',
+                    config: {
+                        "showPointOfInterestLabels": false
+                    }
+                },
+            ],
+            models: {
+                "maple1-lod1": "mapbox://models/mapbox/maple1-lod1.glb",
+                "maple1-lod2": "mapbox://models/mapbox/maple1-lod2.glb",
+                "maple1-lod3": "mapbox://models/mapbox/maple1-lod3.glb",
+                "maple1-lod4": "mapbox://models/mapbox/maple1-lod4.glb",
+                "maple2-lod1": "mapbox://models/mapbox/maple2-lod1.glb",
+                "maple2-lod2": "mapbox://models/mapbox/maple2-lod2.glb",
+                "maple2-lod3": "mapbox://models/mapbox/maple2-lod3.glb",
+                "maple2-lod4": "mapbox://models/mapbox/maple2-lod4.glb",
+                "oak1-lod1": "mapbox://models/mapbox/oak1-lod1.glb",
+                "oak1-lod2": "mapbox://models/mapbox/oak1-lod2.glb",
+                "oak1-lod3": "mapbox://models/mapbox/oak1-lod3.glb",
+                "oak1-lod4": "mapbox://models/mapbox/oak1-lod4.glb",
+                "oak2-lod1": "mapbox://models/mapbox/oak2-lod1.glb",
+                "oak2-lod2": "mapbox://models/mapbox/oak2-lod2.glb",
+                "oak2-lod3": "mapbox://models/mapbox/oak2-lod3.glb",
+                "oak2-lod4": "mapbox://models/mapbox/oak2-lod4.glb",
+            },
+            sources: {
+                composite: {
+                    type:
+                        "vector",
+                    url:
+                        "mapbox://chriswhongmapbox.032o3r83"
+                }
+            },
+
+            layers: [
+                {
+                    id: 'tree-layer',
+                    type: 'model',
+                    source: 'composite',
+                    'source-layer': 'mergedwgs84',
+                    layout: {
+                        'model-id': [
+                            "step",
+                            [
+                                "zoom"
+                            ],
+                            [
+                                "case",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    0
+                                ],
+                                "oak1-lod4",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    1
+                                ],
+                                "oak2-lod4",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    2
+                                ],
+                                "maple1-lod4",
+                                "maple2-lod4"
+                            ],
+                            15.5,
+                            [
+                                "case",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    0
+                                ],
+                                "oak1-lod3",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    1
+                                ],
+                                "oak2-lod3",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    2
+                                ],
+                                "maple1-lod3",
+                                "maple2-lod3"
+                            ],
+                            16.5,
+                            [
+                                "case",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    0
+                                ],
+                                "oak1-lod2",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    1
+                                ],
+                                "oak2-lod2",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    2
+                                ],
+                                "maple1-lod2",
+                                "maple2-lod2"
+                            ],
+                            17.5,
+                            [
+                                "case",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    0
+                                ],
+                                "oak1-lod1",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    1
+                                ],
+                                "oak2-lod1",
+                                [
+                                    "==",
+                                    [
+                                        "%",
+                                        [
+                                            "number",
+                                            [
+                                                "id"
+                                            ]
+                                        ],
+                                        4
+                                    ],
+                                    2
+                                ],
+                                "maple1-lod1",
+                                "maple2-lod1"
+                            ]
+                        ]
+                    },
+                    paint: {
+                        "model-color": [
+                            "hsla",
+                            [
+                                "random",
+                                50,
+                                200,
+                                [
+                                    "id"
+                                ]
+                            ],
+                            60,
+                            [
+                                "random",
+                                70,
+                                90,
+                                [
+                                    "id"
+                                ]
+                            ],
+                            1
+                        ],
+                        "model-color-mix-intensity": 0.21,
+                        "model-opacity": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            15,
+                            0,
+                            16,
+                            1
+                        ],
+                        "model-rotation": [
+                            0,
+                            0,
+                            [
+                                "random",
+                                0,
+                                360,
+                                [
+                                    "id"
+                                ]
+                            ]
+                        ],
+                        "model-scale": [
+                            "match",
+                            [
+                                "%",
+                                [
+                                    "number",
+                                    [
+                                        "id"
+                                    ]
+                                ],
+                                5
+                            ],
+                            0,
+                            [
+                                "literal",
+                                [
+                                    0.8,
+                                    0.8,
+                                    0.8
+                                ]
+                            ],
+                            1,
+                            [
+                                "literal",
+                                [
+                                    0.8,
+                                    0.8,
+                                    0.8
+                                ]
+                            ],
+                            2,
+                            [
+                                "literal",
+                                [
+                                    0.9,
+                                    0.9,
+                                    0.9
+                                ]
+                            ],
+                            [
+                                "literal",
+                                [
+                                    1,
+                                    1,
+                                    1
+                                ]
+                            ]
+                        ]
+                    },
+                    "minzoom": 13,
+                    "type": "model"
+                },
+
+            ]
+        }
+
+        const map = window.map = new mapboxgl.Map({
+            container: 'map',
+            center: [-74.013156, 40.705984],
+            zoom: 15.81,
+            pitch: 67,
+            bearing: 43.3,
+            style: style,
+            minZoom: 15.5,
+            hash: true,
+            lightPreset: 'dusk'
+        });
+
+        15.81//43.3/67
+
+        map.addControl(
+            new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            })
+        );
+
+    </script>
+
+</body>
