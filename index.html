@@ -31,8 +31,26 @@
         }
 
         #about h1 {
+            font-size: 24px;
             margin-top: 0;
             margin-bottom: 15px;
+        }
+
+        @media only screen and (max-width : 640px) {
+            #about {
+                top: auto;
+                bottom: 0;
+                max-width: 100%;
+                right: 15px;
+            }
+
+            #about h1 {
+                font-size: 18px;
+            }
+
+            #about p {
+                font-size: 14px;
+            }
         }
     </style>
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl-loaders.js"></script>
@@ -42,15 +60,18 @@
     <div id="map"></div>
     <div id="about">
         <h1>NYC Trees</h1>
-        <p>An experimental map combining <a href="https://www.nature.com/articles/s41597-023-02000-w">a lidar-based dataset of trees in New York City</a> with the 3D tree models
-            available in <a href="https://github.com/mapbox/mapbox-gl-js/blob/main/MIGRATION_GUIDE_v3.md">Mapbox GL JS v3</a> and the <a href="https://www.mapbox.com/blog/standard-core-style">Mapbox Standard Style</a>.</p>
-            <p>Zoom, rotate, and pitch the map. Take a screenshot and share it if you find a particularly interesting scene!</p>
-            <p>by <a href="https://twitter.com/chris_whong">@chris_whong</a></p>
+        <p>An experimental map combining <a href="https://www.nature.com/articles/s41597-023-02000-w">a lidar-based
+                dataset of trees in New York City</a> with the 3D tree models
+            available in <a href="https://github.com/mapbox/mapbox-gl-js/blob/main/MIGRATION_GUIDE_v3.md">Mapbox GL JS
+                v3</a> and the <a href="https://www.mapbox.com/blog/standard-core-style">Mapbox Standard Style</a>.</p>
+        <p>Zoom, rotate, and pitch the map. Take a screenshot and share it if you find a particularly interesting scene!
+        </p>
+        <p>by <a href="https://twitter.com/chris_whong">@chris_whong</a></p>
     </div>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0-beta.1/mapbox-gl.js"></script>
     <script
-    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <script>
 
         const drawnTreesGeojson = {
