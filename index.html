@@ -448,14 +448,20 @@
             lightPreset: 'dusk'
         });
 
-        15.81//43.3/67
-
         map.addControl(
             new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
                 mapboxgl: mapboxgl
             })
         );
+
+        map.on('style.load', function () {
+            // hide the standard style trees layer
+            const treesLayerId = map.style._order.find((id) => map.style.getLayer(id).type === 'model' && id.startsWith("trees"));
+            if (treesLayerId) {
+                map.setLayoutProperty(treesLayerId, 'visibility', 'none');
+            }
+        });
 
     </script>
 
